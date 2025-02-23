@@ -5,6 +5,25 @@ import os
 from datetime import datetime
 from fpdf import FPDF
 
+# Responsive UI und Seiteneinstellungen
+st.set_page_config(layout="wide")
+st.markdown(
+    """
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .reportview-container {
+            padding: 1rem;
+        }
+        @media only screen and (max-width: 600px) {
+            .element-container {
+                margin: 0.5rem;
+            }
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 if "logged_in_user" not in st.session_state:
     st.session_state.logged_in_user = None
 
@@ -112,6 +131,7 @@ def remove_patient(patient_name):
     if patient_name in st.session_state.patients:
         del st.session_state.patients[patient_name]
         save_data()
+        st.session_state.selected_patient = None  # Auswahl zurücksetzen
         st.success(f"Patient {patient_name} removed successfully.")
         st.rerun()
     else:
@@ -202,8 +222,6 @@ else:
             st.download_button("Download PDF", file, file_name=pdf_file, mime="application/pdf")
 
     if st.button("Remove Patient"):
-        print("Aktuelle Patienten:", st.session_state.patients)
-        print("Ausgewählter Patient:", patient_name)
         remove_patient(patient_name)
 
     if st.button("Back to Patient Selection"):
